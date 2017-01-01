@@ -10,7 +10,7 @@ import bot.irc.LoginDetails;
 import bot.network.TcpConnection;
 import bot.util.Log;
 
-public class Client implements Listener {
+public class Client implements Listener, IRCListener {
 	/** The login details used for identification to the IRC service */
 	private LoginDetails loginDetails;
 	/** The IRC service host we are connected to */
@@ -27,7 +27,10 @@ public class Client implements Listener {
 	private long lastMessage = System.currentTimeMillis();
 	private String chatHistory = "";
 	
+	/** Send a names query every 5 seconds */
 	private QueryThread queryThread = new QueryThread(this);
+	
+	/** Read from the TCP connection every 100 milliseconds */
 	private ExecutorThread reader = new ExecutorThread(100, connection);
 	
 	private NameBase database = new NameBase();
@@ -82,7 +85,6 @@ public class Client implements Listener {
 	
 	@Override
 	public void onReceive(String received) {
-		System.out.println(received);
 		if (received.contains("PRIVMSG")) {
 			int firstColon = received.indexOf(':');
 			int exclamation = received.indexOf('!');
@@ -90,36 +92,11 @@ public class Client implements Listener {
 			if(firstColon == -1 || secondColon == -1 || exclamation == -1) {
 				return;
 			}
-			//System.out.println(received);
+			
 			String user = received.substring(received.indexOf(':') + 1, received.indexOf('!'));
 			String message = received.substring(received.indexOf(':', 30) + 1);
-			System.out.println("[" + user + "]: " + message);
-			chatHistory += "[" + user + "]: " + message + "\n";
 			
-			User dbuser = database.getUser(user);
-			if (dbuser == null) {
-				return;
-			}
-			
-			Classifier classifier = new SimpleClassifier();
-			if (classifier.classify(dbuser)) {
-				Log.debug("I WOULD NOW SAY SOMETHING");
-				
-				int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-				if (hour < 8) {
-					int when = 8 - hour;
-					if (when >= 2) {
-						sendChat("Hi " + user + ". Welcome! Unfortunately most of the devs are asleep at this time. If you wanted to ask something please ask again in " + when + " hours.");
-					} else if (when == 1) {
-						sendChat("Hi " + user + ". Welcome! Unfortunately most of the devs are asleep at this time. If you wanted to ask something please ask again in 1 hour.");
-					} else if (when == 0) {
-						sendChat("Hi " + user + ". Welcome! Unfortunately most of the devs are asleep at this time. If you wanted to ask something please ask again in a couple of minutes");
-					}
-				} else {
-					//sendChat("Hello " + user + "! It seems you are new here, if you asked a question please stay in the chatroom for a while. It might take a few minutes for people to read it. Thank you!");
-				}
-			}
-			database.addPost(user);
+			onMessage(user, message);
 		} else if (received.contains("353")) {			
 			int secondColon = received.indexOf(':', 2);
 			if(secondColon == -1) {
@@ -128,26 +105,78 @@ public class Client implements Listener {
 			String names = received.substring(secondColon + 1);
 			String[] tokens = names.split(" ");
 			
-			for (String token: tokens) {
-				database.addName(token);
-				database.addPoints(token, 1);
-			}
-			
-			count++;
-			if (count > 5) {
-				database.save();
-				count = 0;
-			}
+			onNames(tokens);
 		} else if (received.contains("JOIN")) {
 			int firstColon = received.indexOf(':');
 			int exclamation = received.indexOf('!');
 			String user = received.substring(firstColon + 1, exclamation);
 			//client.sendChat("Good day " + user + "!");
+			onJoin(user);
 		} else if (received.contains("PING")) {
-			connection.send("PONG");
-			//System.out.println("Pong sent");
+			onPing();
 		} else {
 			System.out.println(received);
 		}
+	}
+
+	@Override
+	public void onMessage(String user, String message) {
+		System.out.println("[" + user + "]: " + message);
+		chatHistory += "[" + user + "]: " + message + "\n";
+		
+		User dbuser = database.getUser(user);
+		if (dbuser == null) {
+			return;
+		}
+		
+		Classifier classifier = new SimpleClassifier();
+		if (classifier.classify(dbuser)) {
+			Log.debug("I WOULD NOW SAY SOMETHING");
+			
+			int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+			if (hour < 8) {
+				int when = 8 - hour;
+				if (when >= 2) {
+					sendChat("Hi " + user + ". Welcome! Unfortunately most of the devs are asleep at this time. If you wanted to ask something please ask again in " + when + " hours.");
+				} else if (when == 1) {
+					sendChat("Hi " + user + ". Welcome! Unfortunately most of the devs are asleep at this time. If you wanted to ask something please ask again in 1 hour.");
+				} else if (when == 0) {
+					sendChat("Hi " + user + ". Welcome! Unfortunately most of the devs are asleep at this time. If you wanted to ask something please ask again in a couple of minutes");
+				}
+			} else {
+				//sendChat("Hello " + user + "! It seems you are new here, if you asked a question please stay in the chatroom for a while. It might take a few minutes for people to read it. Thank you!");
+			}
+		}
+		database.addPost(user);
+	}
+
+	@Override
+	public void onNames(String[] names) {
+		for (String name: names) {
+			database.addName(name);
+			database.addPoints(name, 1);
+		}
+		
+		count++;
+		if (count > 5) {
+			database.save();
+			count = 0;
+		}
+	}
+
+	@Override
+	public void onJoin(String user) {
+		
+	}
+
+	@Override
+	public void onPart() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onPing() {
+		connection.send("PONG");
 	}
 }
