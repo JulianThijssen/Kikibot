@@ -1,15 +1,17 @@
 package bot;
 
+import bot.network.IRCConnection;
+
 public class QueryThread extends Thread {
-	private Client client;
+	private IRCConnection connection;
 	
-	public QueryThread(Client client) {
-		this.client = client;
+	public QueryThread(IRCConnection connection) {
+		this.connection = connection;
 	}
 	
 	public void run() {
 		while (true) {
-			client.sendNamesQuery();
+			connection.sendNamesQuery();
 			
 			try {
 				Thread.sleep(5000);

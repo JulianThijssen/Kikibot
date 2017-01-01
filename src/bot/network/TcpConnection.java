@@ -5,21 +5,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
-import bot.Executor;
-import bot.Listener;
 import bot.util.Log;
 
-public class TcpConnection implements Executor {
+public class TcpConnection {
 	private Socket socket = null;
 	private BufferedReader in = null;
 	private PrintWriter out = null;
 	
 	private boolean connected = false;
-	
-	private List<Listener> listeners = new ArrayList<Listener>();
 	
 	public boolean connect(String host, int port) {
 		try {
@@ -31,6 +25,10 @@ public class TcpConnection implements Executor {
 		}
 		System.out.println("Successfully connected");
 		connected = true;
+		return connected;
+	}
+	
+	public boolean isConnected() {
 		return connected;
 	}
 	
@@ -51,24 +49,5 @@ public class TcpConnection implements Executor {
 			Log.error("Failed while reading on TCP connection");
 		}
 		return received;
-	}
-	
-	public void addListener(Listener listener) {
-		listeners.add(listener);
-	}
-
-	@Override
-	public void execute() {
-		if (!connected) {
-			return;
-		}
-
-		String received = read();
-		
-		if (received != null) {
-			for (Listener listener: listeners) {
-				listener.onReceive(received);
-			}
-		}
 	}
 }

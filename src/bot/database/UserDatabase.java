@@ -76,7 +76,7 @@ public class UserDatabase {
 			Statement stmt = c.createStatement();
 			ResultSet rs = stmt.executeQuery(newUsers);
 			while (rs.next()) {
-				int id = rs.getInt("id");
+				//int id = rs.getInt("id");
 				String name = rs.getString("name");
 				int points = rs.getInt("points");
 				int posts = rs.getInt("posts");
@@ -136,7 +136,7 @@ public class UserDatabase {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM " + table + ";");
 			
 			while (rs.next()) {
-				int id = rs.getInt("id");
+				//int id = rs.getInt("id");
 				String name = rs.getString("name");
 				int points = rs.getInt("points");
 				int posts = rs.getInt("posts");
