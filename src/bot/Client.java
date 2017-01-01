@@ -61,7 +61,7 @@ public class Client implements IRCListener {
 					connection.sendChat("Hi " + user + ". Welcome! Unfortunately most of the devs are asleep at this time. If you wanted to ask something please ask again in a couple of minutes");
 				}
 			} else {
-				//sendChat("Hello " + user + "! It seems you are new here, if you asked a question please stay in the chatroom for a while. It might take a few minutes for people to read it. Thank you!");
+				connection.sendChat("Hello " + user + "! It seems you are new here, if you asked a question please stay in the chatroom for a while. It might take a few minutes for people to read it. Thank you!");
 			}
 		}
 		database.addPost(user);
