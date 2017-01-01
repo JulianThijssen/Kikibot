@@ -52,23 +52,6 @@ public class NameBase {
 		return n1.equals(n2);
 	}
 	
-//	public void save() {
-//		try {
-//			PrintWriter out = new PrintWriter(new File("database"));
-//			
-//			String list = "";
-//			for (User user: users) {
-//				list += String.format("%s %d %d\n", user.name, user.points, user.posts);
-//			}
-//			
-//			out.write(list);
-//			out.close();
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//		Log.debug("SAVING DATABASE");
-//	}
-	
 	public void save() {
 		db.open("test.db");
 		db.setTable("users_sync");
@@ -84,26 +67,6 @@ public class NameBase {
 		db.sync();
 		db.close();
 	}
-	
-	// TODO load from SQL database
-//	public void load() {
-//		try {
-//			BufferedReader in = new BufferedReader(new FileReader(new File("database")));
-//			
-//			String line = null;
-//			while ((line = in.readLine()) != null) {
-//				String[] tokens = line.split(" ");
-//				String name = tokens[0];
-//				int points = Integer.parseInt(tokens[1]);
-//				int posts = Integer.parseInt(tokens[2]);
-//				User user = new User(name, points, posts);
-//				users.add(user);
-//			}
-//			in.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
 	
 	public void load() {
 		db.open("test.db");
