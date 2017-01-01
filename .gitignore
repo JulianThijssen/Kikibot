@@ -1,3 +1,11 @@
+bin/
+.settings/
+.project
+
+database*
+userKikibot
+*.db
+
 *.class
 
 # Mobile Tools for Java (J2ME)
