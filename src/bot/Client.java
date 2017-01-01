@@ -6,6 +6,7 @@ import bot.classification.Classifier;
 import bot.classification.NameBase;
 import bot.classification.SimpleClassifier;
 import bot.classification.User;
+import bot.irc.Channel;
 import bot.irc.LoginDetails;
 import bot.network.TcpConnection;
 import bot.util.Log;
@@ -22,7 +23,7 @@ public class Client implements Listener, IRCListener {
 	private TcpConnection connection = new TcpConnection();
 	
 	/** The channel we are connected to */
-	public String channel;
+	public Channel channel;
 	
 	private long lastMessage = System.currentTimeMillis();
 	private String chatHistory = "";
@@ -42,8 +43,8 @@ public class Client implements Listener, IRCListener {
 		this.loginDetails = loginDetails;
 	}
 	
-	public void connect(String channel) {
-		this.channel = channel.toLowerCase();
+	public void connect(Channel channel) {
+		this.channel = channel;
 		
 		boolean connected = connection.connect(host, port);
 		
@@ -65,7 +66,7 @@ public class Client implements Listener, IRCListener {
 		connection.send("USER " + loginDetails.user + " 8 * : " + loginDetails.user);
 	}
 	
-	public void join(String channel) {
+	public void join(Channel channel) {
 		connection.send("JOIN " + channel);
 		
 		queryThread.start();
