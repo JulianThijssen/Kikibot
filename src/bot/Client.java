@@ -12,6 +12,9 @@ import bot.network.IRCConnection;
 import bot.util.Log;
 
 public class Client implements IRCListener {
+	/** After how many queries we update the main database */
+	private static final int SYNC_RATE = 5;
+	
 	/** The IRC connection */
 	private IRCConnection connection;
 	
@@ -75,7 +78,7 @@ public class Client implements IRCListener {
 		}
 		
 		count++;
-		if (count > 5) {
+		if (count > SYNC_RATE) {
 			database.save();
 			count = 0;
 		}
