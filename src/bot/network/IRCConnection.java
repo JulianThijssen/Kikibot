@@ -26,10 +26,12 @@ public class IRCConnection implements Listener, Executor {
 	/** The IRC listener that will receive all IRC events */
 	private IRCListener listener;
 	
-	/** Read from the TCP connection every 100 milliseconds */
-	private ExecutorThread reader = new ExecutorThread(100, this);
+	/** Read from the TCP connection every 300 milliseconds */
+	private ExecutorThread reader = new ExecutorThread(300, this);
 	
 	private long lastMessage = System.currentTimeMillis();
+	
+	private boolean reconnecting = false;
 	
 	public IRCConnection(IRCListener listener, String host, int port, LoginDetails loginDetails) {
 		this.listener = listener;
@@ -50,7 +52,17 @@ public class IRCConnection implements Listener, Executor {
 		identify();
 		join(channel);
 		
-		reader.start();
+		if (!reader.isRunning()) {
+			reader.start();
+		}
+		reconnecting = false;
+	}
+	
+	public void reconnect() {
+		Log.info("Attempting to reconnect");
+		
+		reconnecting = true;
+		connect(channel);
 	}
 
 	public void identify() {
@@ -117,7 +129,11 @@ public class IRCConnection implements Listener, Executor {
 	
 	@Override
 	public void execute() {
+		if (reconnecting) {
+			return;
+		}
 		if (!connection.isConnected()) {
+			reconnect();
 			return;
 		}
 
@@ -126,5 +142,9 @@ public class IRCConnection implements Listener, Executor {
 		if (received != null) {
 			onReceive(received);
 		}
+	}
+	
+	public void close() {
+		connection.close();
 	}
 }

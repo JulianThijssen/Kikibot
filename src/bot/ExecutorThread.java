@@ -22,6 +22,10 @@ public class ExecutorThread extends Thread {
 		running = false;
 	}
 	
+	public boolean isRunning() {
+		return running;
+	}
+	
 	@Override
 	public void run() {
 		while (running) {

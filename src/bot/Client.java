@@ -13,7 +13,7 @@ import bot.util.Log;
 
 public class Client implements IRCListener {
 	/** After how many queries we update the main database */
-	private static final int SYNC_RATE = 5;
+	private static final int SYNC_RATE = 10;
 	
 	/** The IRC connection */
 	private IRCConnection connection;

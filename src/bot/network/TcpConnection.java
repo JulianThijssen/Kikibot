@@ -40,14 +40,20 @@ public class TcpConnection {
 		String received = null;
 		
 		try {
-			if (!in.ready() || !connected) {
-				return null;
-			}
-			
 			received = in.readLine();
 		} catch (IOException e) {
-			Log.error("Failed while reading on TCP connection");
+			Log.info("Failed while reading on TCP connection");
+			Log.info("Disconnecting...");
+			connected = false;
 		}
 		return received;
+	}
+	
+	public void close() {
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
