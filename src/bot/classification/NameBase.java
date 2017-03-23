@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bot.database.UserDatabase;
+import bot.util.Log;
 
 public class NameBase {
 	private UserDatabase db = new UserDatabase();
@@ -53,6 +54,7 @@ public class NameBase {
 	}
 	
 	public void save() {
+		Log.debug("Saving users in database..");
 		db.open("test.db");
 		db.setTable("users_sync");
 		db.dropTable();
@@ -66,6 +68,7 @@ public class NameBase {
 		db.addTable();
 		db.sync();
 		db.close();
+		Log.debug("Database saved!");
 	}
 	
 	public void load() {
@@ -73,7 +76,7 @@ public class NameBase {
 		db.setTable("users");
 		List<User> fetchUsers = db.fetchUsers();
 		users.addAll(fetchUsers);
-		System.out.println("LOADING NAME BASE: " + users.size());
+		Log.info("Loading users from database: " + users.size());
 		db.close();
 	}
 }

@@ -10,7 +10,7 @@ public class Config {
 	public static LoginDetails loadUser(String userFile) {
 		try {
 			List<String> lines = FileUtils.loadLines(userFile);
-			
+			System.out.println("User file size: " + lines.size());
 			LoginDetails user = new LoginDetails(lines.get(0), lines.get(1), lines.get(2));
 			return user;
 		} catch (IOException e) {

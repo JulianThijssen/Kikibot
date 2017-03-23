@@ -23,7 +23,6 @@ public class Client implements IRCListener {
 	
 	private NameBase database = new NameBase();
 	
-	private String chatHistory = "";
 	private int count = 0;
 	
 	public Client(String host, int port, LoginDetails loginDetails) {
@@ -41,17 +40,33 @@ public class Client implements IRCListener {
 
 	@Override
 	public void onMessage(String user, String message) {
-		System.out.println("[" + user + "]: " + message);
-		chatHistory += "[" + user + "]: " + message + "\n";
+		Log.info("[" + user + "]: " + message);
+		//chatHistory += "[" + user + "]: " + message + "\n";
 		
 		User dbuser = database.getUser(user);
 		if (dbuser == null) {
+			Log.debug("Unrecognised user sent a message: " + user);
 			return;
+		}
+		
+		if (message.contains("Kikibot") && message.contains("alive")) {
+			connection.sendChat("Yes, I am still alive.");
+			return;
+		}
+		if (message.contains("Kikibot") && message.contains("analysis")) {
+			connection.sendChat("Entering analysis mode...");
+			Log.info("Entering analysis mode.");
+			Log.DEBUG = true;
+		}
+		if (message.contains("Kikibot") && message.contains("that's all")) {
+			connection.sendChat("Understood...");
+			Log.info("Leaving analysis mode.");
+			Log.DEBUG = false;
 		}
 		
 		Classifier classifier = new SimpleClassifier();
 		if (classifier.classify(dbuser)) {
-			Log.debug("I WOULD NOW SAY SOMETHING");
+			Log.info("Sending welcome message to user: " + user);
 			
 			int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
 			if (hour < 8) {

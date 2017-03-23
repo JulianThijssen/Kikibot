@@ -81,6 +81,7 @@ public class IRCConnection implements Listener, Executor {
 		}
 		connection.send(String.format("PRIVMSG %s :%s", channel, message));
 		lastMessage = System.currentTimeMillis();
+		Log.debug("Message sent!");
 	}
 	
 	public void sendNamesQuery() {
@@ -123,7 +124,7 @@ public class IRCConnection implements Listener, Executor {
 		} else if (received.contains("PING")) {
 			listener.onPing();
 		} else {
-			System.out.println(received);
+			//System.out.println(received);
 		}
 	}
 	

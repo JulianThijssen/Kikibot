@@ -23,10 +23,11 @@ public class UserDatabase {
 	
 	public void open(String db) {
 		try {
+			Log.debug("Opening database...");
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:" + db);
 			c.setAutoCommit(false);
-			System.out.println("Opened database successfully");
+			Log.debug("Opened database successfully!");
 		} catch (Exception e) {
 			Log.error(e.getClass().getName() + ": " + e.getMessage());
 		}
@@ -34,33 +35,35 @@ public class UserDatabase {
 
 	public void executeStatement(String statement) {
 		try {
+			Log.debug("Executing SQL statement...");
 			Statement stmt = c.createStatement();
 		
 			stmt.executeUpdate(statement);
 			stmt.close();
 			c.commit();
+			Log.debug("Successfully executed!");
 		} catch (SQLException e) {
-			Log.error("SQL ERROR: " + e.getMessage());
+			Log.error("Database: Failed to execute SQL statement: " + e.getMessage());
 		}
 	}
 	
 	public void addTable() {
-		Log.debug("Adding table");
+		Log.debug("Creating new table...");
 		String sql = "CREATE TABLE IF NOT EXISTS " + table + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, "
 										   + " NAME           TEXT    NOT NULL UNIQUE, "
 										   + " POINTS         INT     NOT NULL, "
 										   + " POSTS          INT     NOT NULL)";
 		
 		executeStatement(sql);
-		Log.debug("Done!");
+		Log.debug("Table created!");
 	}
 	
 	public void dropTable() {
-		Log.debug("Dropping table");
+		Log.debug("Dropping table...");
 		String sql = "DROP TABLE IF EXISTS " + table;
 		
 		executeStatement(sql);
-		Log.debug("Done!");
+		Log.debug("Table dropped!");
 	}
 
 	public void insert(User user) {
@@ -76,58 +79,21 @@ public class UserDatabase {
 			Statement stmt = c.createStatement();
 			ResultSet rs = stmt.executeQuery(newUsers);
 			while (rs.next()) {
-				//int id = rs.getInt("id");
 				String name = rs.getString("name");
 				int points = rs.getInt("points");
 				int posts = rs.getInt("posts");
 				User user = new User(name, points, posts);
 				insert(user);
-//				System.out.println("ID = " + id);
-//				System.out.println("NAME = " + name);
-//				System.out.println("POINTS = " + points);
-//				System.out.println("POSTS = " + posts);
-//				System.out.println();
 			}
 			rs.close();
 			stmt.close();
 			c.commit();
 		} catch (SQLException e) {
-			Log.error("DB SYNC: " + e.getMessage());
+			Log.error("Database: Failed to sync: " + e.getMessage());
 		}
 	}
 
-//	public void update(User user) {
-//		Log.debug("Updating user");
-//		String sql = String.format("UPDATE %s set POINTS=%d, POSTS=%d where NAME=%s;", table, user.points, user.posts, user.name);
-//
-//		executeStatement(sql);
-//		Log.debug("Updating user done");
-//	}
-
-//	public void fetch() {
-//		try {
-//			Statement stmt = c.createStatement();
-//			stmt = c.createStatement();
-//			ResultSet rs = stmt.executeQuery("SELECT * FROM " + table + ";");
-//			while (rs.next()) {
-//				int id = rs.getInt("id");
-//				String name = rs.getString("name");
-//				int points = rs.getInt("points");
-//				int posts = rs.getInt("posts");
-//				System.out.println("ID = " + id);
-//				System.out.println("NAME = " + name);
-//				System.out.println("POINTS = " + points);
-//				System.out.println("POSTS = " + posts);
-//				System.out.println();
-//			}
-//			rs.close();
-//			stmt.close();
-//		} catch (SQLException e) {
-//			Log.error("DB FETCH: " + e.getMessage());
-//		}
-//	}
-
-	public List<User> fetchUsers() {System.out.println("fetching");
+	public List<User> fetchUsers() {
 		List<User> users = new ArrayList<User>();
 		
 		try {
@@ -136,7 +102,6 @@ public class UserDatabase {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM " + table + ";");
 			
 			while (rs.next()) {
-				//int id = rs.getInt("id");
 				String name = rs.getString("name");
 				int points = rs.getInt("points");
 				int posts = rs.getInt("posts");
@@ -144,22 +109,18 @@ public class UserDatabase {
 				users.add(user);
 			}
 		} catch (SQLException e) {
-			Log.error("USER FETCH: " + e.getMessage());
+			Log.error("Database: Failed to fetch user: " + e.getMessage());
 		}
 		return users;
 	}
 
-//	public void delete() {
-//		String sql = "DELETE from USERS where ID=1;";
-//		
-//		executeStatement(sql);
-//	}
-
 	public void close() {
 		try {
+			Log.debug("Closing database...");
 			c.close();
+			Log.debug("Database closed!");
 		} catch (SQLException e) {
-			Log.error("Failed to disconnect.");
+			Log.error("Database: Failed to disconnect.");
 		}
 	}
 }
