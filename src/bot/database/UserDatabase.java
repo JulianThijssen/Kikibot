@@ -35,13 +35,11 @@ public class UserDatabase {
 
 	public void executeStatement(String statement) {
 		try {
-			Log.debug("Executing SQL statement...");
 			Statement stmt = c.createStatement();
 		
 			stmt.executeUpdate(statement);
 			stmt.close();
 			c.commit();
-			Log.debug("Successfully executed!");
 		} catch (SQLException e) {
 			Log.error("Database: Failed to execute SQL statement: " + e.getMessage());
 		}
