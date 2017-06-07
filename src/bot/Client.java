@@ -57,21 +57,27 @@ public class Client implements IRCListener {
 			return;
 		}
 		
-		if (message.contains("Kikibot") && message.contains("alive")) {
-			connection.sendChat("Yes, I am still alive.");
-			return;
+		if (message.contains("Kikibot")) {
+			if (message.contains("alive")) {
+				connection.sendChat("Yes, I am still alive.");
+				return;
+			}
+			if (message.contains("analysis")) {
+				connection.sendChat("Entering analysis mode...");
+				Log.info("Entering analysis mode.");
+				Log.DEBUG = true;
+			}
+			if (message.contains("that's all")) {
+				connection.sendChat("Understood...");
+				Log.info("Leaving analysis mode.");
+				Log.DEBUG = false;
+			}
+			if (message.contains("what time")) {
+				connection.sendChat("It is currently " + calendar.getTime());
+				return;
+			}
 		}
-		if (message.contains("Kikibot") && message.contains("analysis")) {
-			connection.sendChat("Entering analysis mode...");
-			Log.info("Entering analysis mode.");
-			Log.DEBUG = true;
-		}
-		if (message.contains("Kikibot") && message.contains("that's all")) {
-			connection.sendChat("Understood...");
-			Log.info("Leaving analysis mode.");
-			Log.DEBUG = false;
-		}
-		
+
 		Classifier classifier = new SimpleClassifier();
 		if (classifier.classify(dbuser)) {
 			Log.info("Sending welcome message to user: " + user);
