@@ -1,6 +1,7 @@
 package bot;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import bot.classification.Classifier;
 import bot.classification.NameBase;
@@ -12,6 +13,9 @@ import bot.network.IRCConnection;
 import bot.util.Log;
 
 public class Client implements IRCListener {
+	/** The time zone Kikibot is based in */
+	private static final String TIME_ZONE = "Europe/Amsterdam";
+	
 	/** After how many queries we update the main database */
 	private static final int SYNC_RATE = 10;
 	
@@ -25,9 +29,13 @@ public class Client implements IRCListener {
 	
 	private int count = 0;
 	
+	/** Current calendar used for time-based functionality */
+	private Calendar calendar = Calendar.getInstance();
+	
 	public Client(String host, int port, LoginDetails loginDetails) {
 		connection = new IRCConnection(this, host, port, loginDetails);
 		queryThread = new QueryThread(connection);
+		calendar.setTimeZone(TimeZone.getTimeZone(TIME_ZONE));
 	}
 	
 	public void connect(Channel channel) {
@@ -68,7 +76,7 @@ public class Client implements IRCListener {
 		if (classifier.classify(dbuser)) {
 			Log.info("Sending welcome message to user: " + user);
 			
-			int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+			int hour = calendar.get(Calendar.HOUR_OF_DAY);
 			if (hour < 8) {
 				int when = 8 - hour;
 				if (when >= 2) {
