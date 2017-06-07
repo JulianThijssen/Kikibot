@@ -1,11 +1,11 @@
 package bot;
 
-import bot.network.IRCConnection;
+import bot.network.IrcConnection;
 
 public class QueryThread extends Thread {
-	private IRCConnection connection;
+	private IrcConnection connection;
 	
-	public QueryThread(IRCConnection connection) {
+	public QueryThread(IrcConnection connection) {
 		this.connection = connection;
 	}
 	

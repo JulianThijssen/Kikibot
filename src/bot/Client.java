@@ -9,7 +9,7 @@ import bot.classification.SimpleClassifier;
 import bot.classification.User;
 import bot.irc.Channel;
 import bot.irc.LoginDetails;
-import bot.network.IRCConnection;
+import bot.network.IrcConnection;
 import bot.util.Log;
 
 public class Client implements IRCListener {
@@ -20,7 +20,7 @@ public class Client implements IRCListener {
 	private static final int SYNC_RATE = 10;
 	
 	/** The IRC connection */
-	private IRCConnection connection;
+	private IrcConnection connection;
 	
 	/** Send a names query every 5 seconds */
 	private QueryThread queryThread;
@@ -33,7 +33,7 @@ public class Client implements IRCListener {
 	private Calendar calendar = Calendar.getInstance();
 	
 	public Client(String host, int port, LoginDetails loginDetails) {
-		connection = new IRCConnection(this, host, port, loginDetails);
+		connection = new IrcConnection(this, host, port, loginDetails);
 		queryThread = new QueryThread(connection);
 		calendar.setTimeZone(TimeZone.getTimeZone(TIME_ZONE));
 	}

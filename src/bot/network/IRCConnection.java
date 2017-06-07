@@ -8,7 +8,7 @@ import bot.irc.Channel;
 import bot.irc.LoginDetails;
 import bot.util.Log;
 
-public class IRCConnection implements Listener, Executor {
+public class IrcConnection implements Listener, Executor {
 	/** The login details used for identification to the IRC service */
 	private LoginDetails loginDetails;
 	
@@ -33,7 +33,7 @@ public class IRCConnection implements Listener, Executor {
 	
 	private boolean reconnecting = false;
 	
-	public IRCConnection(IRCListener listener, String host, int port, LoginDetails loginDetails) {
+	public IrcConnection(IRCListener listener, String host, int port, LoginDetails loginDetails) {
 		this.listener = listener;
 		this.host = host;
 		this.port = port;
