@@ -1,5 +1,8 @@
 package bot;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -14,8 +17,8 @@ import bot.util.Log;
 
 public class Client implements IRCListener {
 	/** The time zone Kikibot is based in */
-	private static final String TIME_ZONE = "Europe/Amsterdam";
-	
+	private static final ZoneId TIME_ZONE = ZoneId.of("Europe/Amsterdam");
+
 	/** After how many queries we update the main database */
 	private static final int SYNC_RATE = 10;
 	
@@ -29,13 +32,9 @@ public class Client implements IRCListener {
 	
 	private int count = 0;
 	
-	/** Current calendar used for time-based functionality */
-	private Calendar calendar = Calendar.getInstance();
-	
 	public Client(String host, int port, LoginDetails loginDetails) {
 		connection = new IrcConnection(this, host, port, loginDetails);
 		queryThread = new QueryThread(connection);
-		calendar.setTimeZone(TimeZone.getTimeZone(TIME_ZONE));
 	}
 	
 	public void connect(Channel channel) {
@@ -73,7 +72,7 @@ public class Client implements IRCListener {
 				Log.DEBUG = false;
 			}
 			if (message.contains("what time")) {
-				connection.sendChat("It is currently " + calendar.getTime());
+				connection.sendChat("It is currently " + ZonedDateTime.now(TIME_ZONE).format(DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss Z")));
 				return;
 			}
 		}
@@ -82,7 +81,7 @@ public class Client implements IRCListener {
 		if (classifier.classify(dbuser)) {
 			Log.info("Sending welcome message to user: " + user);
 			
-			int hour = calendar.get(Calendar.HOUR_OF_DAY);
+			int hour = ZonedDateTime.now(TIME_ZONE).getHour();
 			if (hour < 8) {
 				int when = 8 - hour;
 				if (when >= 2) {
