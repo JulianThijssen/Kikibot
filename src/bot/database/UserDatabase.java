@@ -92,6 +92,8 @@ public class UserDatabase {
 	}
 
 	public List<User> fetchUsers() {
+		addTable();
+		
 		List<User> users = new ArrayList<User>();
 		
 		try {
