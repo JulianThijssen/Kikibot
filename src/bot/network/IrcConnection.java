@@ -115,6 +115,8 @@ public class IrcConnection implements Listener, Executor {
 			String[] tokens = names.split(" ");
 			
 			listener.onNames(tokens);
+		} else if (received.contains("End of /MOTD command")) {
+			listener.onChannelJoin();
 		} else if (received.contains("JOIN")) {
 			int firstColon = received.indexOf(':');
 			int exclamation = received.indexOf('!');

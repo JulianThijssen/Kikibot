@@ -110,6 +110,10 @@ public class Client implements IRCListener {
 			database.save();
 			count = 0;
 		}
+	@Override
+	public void onChannelJoin() {
+		Log.info("Starting name queries.");
+		queryThread.start();
 	}
 
 	@Override
