@@ -55,15 +55,13 @@ public class NameBase {
 	
 	public void save() {
 		Log.debug("Saving users in database..");
+
 		db.open("test.db");
 		db.setTable("users_sync");
 		db.dropTable();
 		db.addTable();
-		
-		for (User user: users) {
-			db.insert(user);
-		}
-		
+		db.insert(users);
+
 		db.setTable("users");
 		db.addTable();
 		db.sync();
